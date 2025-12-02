@@ -9,10 +9,8 @@ import java.util.ArrayList;
 
 public class Player {
 
-    // Create name of the player (unique ID)
+    // Create instance variables
     private String name;
-
-    // The player’s hand of cards
     private ArrayList<Card> hand = new ArrayList<>();
 
     // Player Constructor 
@@ -20,37 +18,15 @@ public class Player {
         this.name = name;
     }
 
-    // Return the player's name
+    // Create getters
     public String getName() {
         return name;
     }
-
-    // Set a new name
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    // Player logic (unused in Blackjack — game controls the turns)
-    public void play() {
-        // Do nothing here
-    }
-
-    // Method to add a card to the player's hand
-    public void addCard(Card c) {
-        hand.add(c);
-    }
-
-    // Method to remove all cards from the hand
-    public void clearHand() {
-        hand.clear();
-    }
-
-    // Method to return the list of cards in the hand
+    
     public ArrayList<Card> getHand() {
         return hand;
     }
-
-    // Method to compute the best Blackjack score possible with Aces counted
+    
     public int getBestScore() {
 
         int total = 0;
@@ -85,12 +61,27 @@ public class Player {
         return best;
     }
 
-    // Method to check if this player's score exceeds 21
+    // Create setters
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Method to add a card to the player's hand
+    public void addCard(Card c) {
+        hand.add(c);
+    }
+
+    // Method to clear all cards from the hand
+    public void clearHand() {
+        hand.clear();
+    }
+
+    // Method to check if Player's score exceeds 21
     public boolean isBusted() {
         return getBestScore() > 21;
     }
 
-    // Method to check if this player Blackjack
+    // Method to check if Player Blackjack
     public boolean hasBlackjack() {
         if (hand.size() == 2 && getBestScore() == 21) {
             return true;

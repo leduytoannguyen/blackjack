@@ -10,10 +10,8 @@ import java.util.Collections;
 
 public class GroupOfCards {
 
-    // Holds all cards in this group
+    // Create instance variables
     private ArrayList<Card> cards;
-
-    // The maximum allowed size (not enforced strictly here)
     private int size;
 
     // GroupOfCards Constructor
@@ -24,37 +22,36 @@ public class GroupOfCards {
         this.cards = new ArrayList<>();
     }
 
-    // Return all cards as an ArrayList
+    // Create getters
     public ArrayList<Card> getCards() {
         return cards;
     }
+    
+    public int getSize() {
+        return size;
+    }
+    
+    // Create setters
+    public void setSize(int size) {
+        this.size = size;
+    }
 
-    // Shuffle the cards randomly
+    // Method to shuffle cards
     public void shuffle() {
         Collections.shuffle(cards);
     }
 
-    // Add a single card to the group
+    // Method to add a card to the group
     public void addCard(Card c) {
         cards.add(c);
     }
 
-    // Deal one card from the top of the deck
+    // Method to deal one card from the top of the deck
     public Card dealCard() {
         if (cards.isEmpty()) {
             return null;
         }
         return cards.remove(0);
-    }
-
-    // Return the maximum size of the group
-    public int getSize() {
-        return size;
-    }
-
-    // Set a new maximum size
-    public void setSize(int size) {
-        this.size = size;
     }
 
 }
