@@ -1,49 +1,97 @@
 /**
- * SYST 17796 Project Base code.
- * Students can modify and extend to implement their game.
- * Add your name as an author and the date!
+ * @author Joren Rafeiro
+ * @date November 15, 2025
+ * @description Player Class (creates Player objects)
  */
 package ca.sheridancollege.project;
 
-/**
- * A class that models each Player in the game. Players have an identifier, which should be unique.
- *
- * @author dancye
- * @author Paul Bonenfant Jan 2020
- */
-public abstract class Player {
+import java.util.ArrayList;
 
-    private String name; //the unique name for this player
+public class Player {
 
-    /**
-     * A constructor that allows you to set the player's unique ID
-     *
-     * @param name the unique ID to assign to this player.
-     */
+    // The name of the player (unique ID)
+    private String name;
+
+    // The player’s hand of cards
+    private ArrayList<Card> hand = new ArrayList<>();
+
+    // Player Constructor 
     public Player(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the player name
-     */
+    // Return the player's name
     public String getName() {
         return name;
     }
 
-    /**
-     * Ensure that the playerID is unique
-     *
-     * @param name the player name to set
-     */
+    // Set a new name
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * The method to be overridden when you subclass the Player class with your specific type of Player and filled in
-     * with logic to play your game.
-     */
-    public abstract void play();
+    // Player logic (unused in Blackjack — game controls the turns)
+    public void play() {
+        // Do nothing here
+    }
 
+    // Method to add a card to the player's hand
+    public void addCard(Card c) {
+        hand.add(c);
+    }
+
+    // Method to remove all cards from the hand
+    public void clearHand() {
+        hand.clear();
+    }
+
+    // Method to return the list of cards in the hand
+    public ArrayList<Card> getHand() {
+        return hand;
+    }
+
+    // Method to compute the best Blackjack score possible with Aces counted
+    public int getBestScore() {
+
+        int total = 0;      // Sum of card values counting all Aces as 1
+        int aceCount = 0;   // Count number of Aces held
+
+        // Loop through all cards in the hand
+        for (Card c : hand) {
+
+            // Safe cast to PlayingCard
+            PlayingCard pc = (PlayingCard) c;
+
+            // Add card's base value (Aces count as 1 here)
+            int value = pc.getValue();
+            total += value;
+
+            // Track if this card is an Ace
+            if (pc.isAce()) {
+                aceCount++;
+            }
+        }
+
+        // Start with total and try to convert Aces to 11 when possible
+        int best = total;
+
+        // Convert as many Aces as possible from 1 → 11 without busting
+        while (aceCount > 0 && best + 10 <= 21) {
+            best += 10;
+            aceCount--;
+        }
+
+        // Return the highest valid score
+        return best;
+    }
+
+    // Method to check if this player's score exceeds 21
+    public boolean isBusted() {
+        return getBestScore() > 21;
+    }
+
+    // Method to check if this player has a natural Blackjack
+    public boolean hasBlackjack() {
+        return hand.size() == 2 && getBestScore() == 21;
+    }
 }

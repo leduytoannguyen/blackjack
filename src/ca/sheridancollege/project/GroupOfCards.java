@@ -1,55 +1,60 @@
 /**
- * SYST 17796 Project Base code.
- * Students can modify and extend to implement their game.
- * Add your name as an author and the date!
+ * @author Joren Rafeiro
+ * @date November 15, 2025
+ * @description Group of Cards Class (to create groups of card objects)
  */
 package ca.sheridancollege.project;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
- * A concrete class that represents any grouping of cards for a Game. HINT, you might want to subclass this more than
- * once. The group of cards has a maximum size attribute which is flexible for reuse.
- *
- * @author dancye
- * @author Paul Bonenfant Jan 2020
- */
 public class GroupOfCards {
 
-    //The group of cards, stored in an ArrayList
+    // Holds all cards in this group
     private ArrayList<Card> cards;
-    private int size;//the size of the grouping
 
+    // The maximum allowed size (not enforced strictly here)
+    private int size;
+
+    // GroupOfCards Constructor
     public GroupOfCards(int size) {
         this.size = size;
+
+        // Initialize the internal list of cards
+        this.cards = new ArrayList<>();
     }
 
-    /**
-     * A method that will get the group of cards as an ArrayList
-     *
-     * @return the group of cards.
-     */
+    // Return all cards as an ArrayList
     public ArrayList<Card> getCards() {
         return cards;
     }
 
+    // Shuffle the cards randomly
     public void shuffle() {
         Collections.shuffle(cards);
     }
 
-    /**
-     * @return the size of the group of cards
-     */
+    // Add a single card to the group
+    public void addCard(Card c) {
+        cards.add(c);
+    }
+
+    // Deal one card from the top of the deck
+    public Card dealCard() {
+        if (cards.isEmpty()) {
+            return null;
+        }
+        return cards.remove(0);
+    }
+
+    // Return the maximum size of the group
     public int getSize() {
         return size;
     }
 
-    /**
-     * @param size the max size for the group of cards
-     */
+    // Set a new maximum size
     public void setSize(int size) {
         this.size = size;
     }
 
-}//end class
+}
