@@ -7,15 +7,14 @@ package ca.sheridancollege.project;
 
 public class PlayingCard extends Card {
 
-    // Enum of the four standard suits
+    // Create enum of the four standard suits
     public enum Suit {
         HEARTS, DIAMONDS, CLUBS, SPADES
     }
 
-    // The card's value (A, 2-10, J, Q, K)
+    // Create instance variables
     private final String value;
 
-    // The suit of the card
     private final Suit suit;
 
     // PlayingCard Constructor
@@ -37,7 +36,7 @@ public class PlayingCard extends Card {
             return 1;
         }
 
-        // Check if value is J, Q, or K, value is 10
+        // Check if the card is J, Q, or K
         if (value.equals("J") || value.equals("Q") || value.equals("K")) {
             return 10;
         }
@@ -46,13 +45,13 @@ public class PlayingCard extends Card {
         return Integer.parseInt(value);
     }
 
-    // Method to convert the card into a printable string rank + suitSymbol
+    // Method to convert the card into a printable string value + suitSymbol
     @Override
     public String toString() {
 
         String symbol;
 
-        // Determine which Unicode symbol to use based on suit
+        // Determine which symbol to use based on suit
         if (suit == Suit.HEARTS) {
             symbol = "♥";
         } else if (suit == Suit.DIAMONDS) {
@@ -63,7 +62,7 @@ public class PlayingCard extends Card {
             symbol = "♠";
         }
 
-        // Example: "K♦" or "10♠"
         return value + symbol;
+        
     }
 }

@@ -9,10 +9,8 @@ import java.util.ArrayList;
 
 public abstract class Game {
 
-    // The name/title of the game
+    // Create instance variables
     private final String name;
-
-    // List of players who are participating
     private ArrayList<Player> players;
 
     // Game Constructor
@@ -21,24 +19,22 @@ public abstract class Game {
         players = new ArrayList<>();
     }
 
-    // Return the name of the game
+    // Create getters
     public String getName() {
         return name;
     }
 
-    // Get the list of players
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
-    // Set a new list of players
+    // Create setters
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 
-    // All games must implement a play() method
+    // Create abstract methods (for play and declareWinner)
     public abstract void play();
-
-    // All games must implement a declareWinner() method
+    
     public abstract void declareWinner();
 }

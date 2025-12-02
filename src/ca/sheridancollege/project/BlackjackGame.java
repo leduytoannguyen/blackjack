@@ -10,18 +10,19 @@ import java.util.Scanner;
 
 public class BlackjackGame extends Game {
 
-    // The deck used for gameplay
+    // Create the deck used for gameplay
     private GroupOfCards deck;
 
-    // Counters to track total wins for player and dealer
+    // Create counters to track total wins for player and dealer
     private int playerWins = 0;
     private int dealerWins = 0;
 
-    // Enum to hold values
+    // Create enum to hold values
     private enum values {
         A("A"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"),
         EIGHT("8"), NINE("9"), TEN("10"), J("J"), Q("Q"), K("K");
 
+        // Create label variable to properly display the card
         private final String label;
 
         values(String label) {
@@ -45,7 +46,7 @@ public class BlackjackGame extends Game {
         // Create a new GroupOfCards with capacity 52
         deck = new GroupOfCards(52);
 
-        // Loop through every suit and rank to build each card
+        // Loop through every suit and value to build each card
         for (PlayingCard.Suit s : PlayingCard.Suit.values()) {
             for (values v : values.values()) {
 
@@ -54,7 +55,7 @@ public class BlackjackGame extends Game {
             }
         }
 
-        // Shuffle the deck once it is fully built
+        // Shuffle the deck
         deck.shuffle();
     }
 
@@ -65,14 +66,17 @@ public class BlackjackGame extends Game {
         // Create a Scanner for user input
         Scanner input = new Scanner(System.in);
 
-        // Ask user for a display name
+        // Ask user for their name
         System.out.print("Enter your name: ");
         String name = input.nextLine().trim();
 
-        // Default to "Player" if no name given
+        // Make their name "Player" if nothing was entered
         if (name.isEmpty()) {
             name = "Player";
         }
+
+        // Print a line for readability
+        System.out.println("\n------------------------------------");
 
         // Create Player objects for the user and dealer
         Player player = new Player(name);
@@ -84,7 +88,7 @@ public class BlackjackGame extends Game {
         list.add(dealer);
         setPlayers(list);
 
-        // Loop condition so the player can play multiple rounds
+        // Loop condition so the user can play multiple rounds
         boolean again = true;
 
         while (again) {
@@ -103,24 +107,25 @@ public class BlackjackGame extends Game {
             // Display player hand and dealer's first card
             System.out.println("\n" + player.getName() + "'s hand: " + show(player)
                     + " (score " + player.getBestScore() + ")");
-            System.out.println("Dealer shows: " + dealer.getHand().get(0));
+            System.out.println("Dealer shows: " + dealer.getHand().get(0) + " ?");
 
-            // Check for immediate blackjack
-            if (player.hasBlackjack() || dealer.hasBlackjack()) {
+            // Check if the player has Blackjack
+            if (player.hasBlackjack()) {
 
-                // Show dealer full hand and resolve the round immediately
+                // Show dealer full hand end the round
                 declareWinner(player, dealer);
 
             } else {
 
-                // Player’s turn: ask to hit or stand until bust or stand
+                // User's turn (only loop if they did not bust)
                 while (!player.isBusted()) {
 
-                    // Ask player for decision
-                    System.out.print("Hit or stand? (h/s): ");
+                    // Ask user to hit or stand
+                    System.out.print("\nHit or stand? (h/s): ");
                     String in = input.nextLine().trim().toLowerCase();
 
-                    // Check if player hits
+                    
+                    // Check if user hits
                     if (in.startsWith("h")) {
 
                         // Deal a card
@@ -132,18 +137,18 @@ public class BlackjackGame extends Game {
                         System.out.println("Your hand: " + show(player)
                                 + " (score " + player.getBestScore() + ")");
 
-                        // If player hits 21 (non-natural 21), they must stop
+                        // Check if user has score of 21
                         if (player.getBestScore() == 21) {
                             break;
                         }
 
-                    } else if (in.startsWith("s")) {
-
-                        // Break out of loop if player stands
+                    } // Check if user stands
+                    else if (in.startsWith("s")) {
                         break;
 
-                    } else {
-                        System.out.println("Sorry, that was not a valid entry. Please enter h or s.");
+                    } // Invalid input
+                    else {
+                        System.out.println("Sorry, that was not a valid entry. Please try again.");
                     }
 
                 }
@@ -151,12 +156,18 @@ public class BlackjackGame extends Game {
                 // Dealer’s turn
                 if (!player.isBusted()) {
 
+                    // Check if dealer has Blackjack
+                    if (dealer.hasBlackjack()) {
+                        // Declare winner immediately
+                        declareWinner(player, dealer);
+                    }
+
                     // Show dealer’s full hand
                     System.out.println("\nDealer's hand: " + show(dealer)
                             + " (score " + dealer.getBestScore() + ")");
 
-                    // Dealer hits until reaching at least 17
-                    while (dealer.getBestScore() < 17) {
+                    // Make dealer hit until win or tie
+                    while (dealer.getBestScore() < player.getBestScore()) {
                         Card c = deck.dealCard();
                         dealer.addCard(c);
                         System.out.println("Dealer draws " + c);
@@ -167,9 +178,27 @@ public class BlackjackGame extends Game {
                 declareWinner(player, dealer);
             }
 
-            // Ask if the user wants to play another round
-            System.out.print("\nPlay again? (y/n): ");
-            again = input.nextLine().trim().toLowerCase().startsWith("y");
+            // Create a variable to detect valid input
+            boolean validInput = false;
+            // Loop until input is valid
+            while (!validInput) {
+                // Ask the user if they want to play again
+                System.out.print("\nPlay again? (y/n): ");
+                String response = input.nextLine().trim().toLowerCase();
+
+                // Check if the input was yes
+                if (response.equals("y") || response.equals("yes")) {
+                    again = true;
+                    validInput = true;
+                } // Check if the input was no
+                else if (response.equals("n") || response.equals("no")) {
+                    again = false;
+                    validInput = true;
+                } // Invalid inout
+                else {
+                    System.out.println("Sorry, that was not a valid entry. Please try again.");
+                }
+            }
             // Print a line for readability
             System.out.println("\n------------------------------------");
         }
@@ -183,17 +212,18 @@ public class BlackjackGame extends Game {
         System.out.println("Joren Rafeiro");
         System.out.println("Gian Victor Pujante");
         System.out.println("Ibrahim Adam");
-        System.out.println("Le Duy Toan Nguyen Nguyen");
+        System.out.println("Le Duy Toan Nguyen");
         // Print a line for readability
         System.out.println("\n------------------------------------");
 
     }
 
-    // Method to print a player's hand as a comma-separated line (StringBuilder removed)
+    // Method to print a Player's hand
     private String show(Player p) {
+        // Create empty String to hold the printed hand
         String result = "";
 
-        // Loop through each card in the player's hand
+        // Loop through each card in the Players's hand
         for (int i = 0; i < p.getHand().size(); i++) {
 
             // Add card as text
@@ -207,16 +237,17 @@ public class BlackjackGame extends Game {
         return result;
     }
 
-    // Method to determine which player wins a round of Blackjack
+    // Method to determine which Player wins a round of Blackjack
     private void declareWinner(Player player, Player dealer) {
 
+        // Display final hands
         System.out.println("\nFinal Hands:");
         System.out.println(player.getName() + ": " + show(player)
                 + " (" + player.getBestScore() + ")");
         System.out.println("Dealer: " + show(dealer)
                 + " (" + dealer.getBestScore() + ")");
 
-        // Check bust conditions first
+        // Check bust conditions
         if (player.isBusted()) {
             System.out.println("Dealer wins — player busted.");
 
@@ -229,7 +260,7 @@ public class BlackjackGame extends Game {
             // Add player win to counter
             playerWins++;
 
-        } // Check Blackjack conditions (real two-card blackjack)
+        } // Check Blackjack conditions
         else if (player.hasBlackjack() && !dealer.hasBlackjack()) {
             System.out.println(player.getName() + " wins with Blackjack!");
 
@@ -242,21 +273,23 @@ public class BlackjackGame extends Game {
             // Add dealer win to counter
             dealerWins++;
 
-        } // Compare scores normally
+        } // User wins
         else if (player.getBestScore() > dealer.getBestScore()) {
             System.out.println(player.getName() + " wins!");
 
             // Add player win to counter
             playerWins++;
 
-        } else if (dealer.getBestScore() > player.getBestScore()) {
+        } // Dealer wins
+        else if (dealer.getBestScore() > player.getBestScore()) {
             System.out.println("Dealer wins.");
 
             // Add dealer win to counter
             dealerWins++;
 
-        } else {
-            System.out.println("Push (tie). No points awarded.");
+        } // Tie
+        else {
+            System.out.println("Push. No points awarded.");
         }
 
         // Display the running score after each game
@@ -265,10 +298,9 @@ public class BlackjackGame extends Game {
         System.out.println("Dealer: " + dealerWins);
     }
 
-    // Method to print out the winner
+    // Method declareWinner (required by abstract class)
     @Override
     public void declareWinner() {
-        // Required by abstract class but unused
-        System.out.println("Winner declared.");
+        // Do nothing
     }
 }
