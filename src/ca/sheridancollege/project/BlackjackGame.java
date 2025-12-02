@@ -13,6 +13,27 @@ public class BlackjackGame extends Game {
     // The deck used for gameplay
     private GroupOfCards deck;
 
+    // Counters to track total wins for player and dealer
+    private int playerWins = 0;
+    private int dealerWins = 0;
+
+    // Enum to hold values
+    private enum values {
+        A("A"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"),
+        EIGHT("8"), NINE("9"), TEN("10"), J("J"), Q("Q"), K("K");
+
+        private final String label;
+
+        values(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
     // BlackjackGame Constructor
     public BlackjackGame(String name) {
         super(name);
@@ -24,15 +45,12 @@ public class BlackjackGame extends Game {
         // Create a new GroupOfCards with capacity 52
         deck = new GroupOfCards(52);
 
-        // All possible card values
-        String[] values = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
-
         // Loop through every suit and rank to build each card
         for (PlayingCard.Suit s : PlayingCard.Suit.values()) {
-            for (String v : values) {
+            for (values v : values.values()) {
 
                 // Create each PlayingCard and add it to the deck
-                deck.addCard(new PlayingCard(v, s));
+                deck.addCard(new PlayingCard(v.toString(), s));
             }
         }
 
@@ -82,78 +100,111 @@ public class BlackjackGame extends Game {
             player.addCard(deck.dealCard());
             dealer.addCard(deck.dealCard());
 
-            // Display player hand and dealer's first (face-up) card
+            // Display player hand and dealer's first card
             System.out.println("\n" + player.getName() + "'s hand: " + show(player)
                     + " (score " + player.getBestScore() + ")");
             System.out.println("Dealer shows: " + dealer.getHand().get(0));
 
-            // Player’s turn: ask to hit or stand until bust or stand
-            while (!player.isBusted()) {
+            // Check for immediate blackjack
+            if (player.hasBlackjack() || dealer.hasBlackjack()) {
 
-                // Ask player for decision
-                System.out.print("Hit or stand? (h/s): ");
-                String in = input.nextLine().trim().toLowerCase();
+                // Show dealer full hand and resolve the round immediately
+                declareWinner(player, dealer);
 
-                // Check if player hits
-                if (in.startsWith("h")) {
-                    // Deal a card
-                    Card c = deck.dealCard();
-                    player.addCard(c);
+            } else {
 
-                    // Display new state
-                    System.out.println("You drew " + c);
-                    System.out.println("Your hand: " + show(player)
-                            + " (score " + player.getBestScore() + ")");
-                } // Check if player stands
-                else if (in.startsWith("s")) {
-                    // Break out of loop
-                    break;
+                // Player’s turn: ask to hit or stand until bust or stand
+                while (!player.isBusted()) {
 
-                } // Check for invalid input
-                else {
-                    System.out.println("Enter h or s.");
+                    // Ask player for decision
+                    System.out.print("Hit or stand? (h/s): ");
+                    String in = input.nextLine().trim().toLowerCase();
+
+                    // Check if player hits
+                    if (in.startsWith("h")) {
+
+                        // Deal a card
+                        Card c = deck.dealCard();
+                        player.addCard(c);
+
+                        // Display new state
+                        System.out.println("You drew " + c);
+                        System.out.println("Your hand: " + show(player)
+                                + " (score " + player.getBestScore() + ")");
+
+                        // If player hits 21 (non-natural 21), they must stop
+                        if (player.getBestScore() == 21) {
+                            break;
+                        }
+
+                    } else if (in.startsWith("s")) {
+
+                        // Break out of loop if player stands
+                        break;
+
+                    } else {
+                        System.out.println("Sorry, that was not a valid entry. Please enter h or s.");
+                    }
+
                 }
 
-            }
+                // Dealer’s turn
+                if (!player.isBusted()) {
 
-            // Dealer’s turn
-            // Check if player did not bust
-            if (!player.isBusted()) {
-                // Show dealer’s full hand
-                System.out.println("\nDealer's hand: " + show(dealer)
-                        + " (score " + dealer.getBestScore() + ")");
+                    // Show dealer’s full hand
+                    System.out.println("\nDealer's hand: " + show(dealer)
+                            + " (score " + dealer.getBestScore() + ")");
 
-                // Dealer hits until reaching at least 17
-                while (dealer.getBestScore() < 17) {
-                    Card c = deck.dealCard();
-                    dealer.addCard(c);
-                    System.out.println("Dealer draws " + c);
+                    // Dealer hits until reaching at least 17
+                    while (dealer.getBestScore() < 17) {
+                        Card c = deck.dealCard();
+                        dealer.addCard(c);
+                        System.out.println("Dealer draws " + c);
+                    }
                 }
-            }
 
-            // Determine and announce the winner of round
-            declareWinner(player, dealer);
+                // Determine and announce the winner of round
+                declareWinner(player, dealer);
+            }
 
             // Ask if the user wants to play another round
             System.out.print("\nPlay again? (y/n): ");
             again = input.nextLine().trim().toLowerCase().startsWith("y");
+            // Print a line for readability
+            System.out.println("\n------------------------------------");
         }
+
+        // Display final score after the player chooses to stop playing
+        System.out.println("\nFinal Score:");
+        System.out.println(player.getName() + ": " + playerWins);
+        System.out.println("Dealer: " + dealerWins);
+        System.out.println("\nThanks for playing!");
+        System.out.println("\nCreated by:");
+        System.out.println("Joren Rafeiro");
+        System.out.println("Gian Victor Pujante");
+        System.out.println("Ibrahim Adam");
+        System.out.println("Le Duy Toan Nguyen Nguyen");
+        // Print a line for readability
+        System.out.println("\n------------------------------------");
+
     }
 
-    // Method to print a player's hand as a comma-separated line
+    // Method to print a player's hand as a comma-separated line (StringBuilder removed)
     private String show(Player p) {
-        StringBuilder sb = new StringBuilder();
+        String result = "";
 
         // Loop through each card in the player's hand
         for (int i = 0; i < p.getHand().size(); i++) {
-            sb.append(p.getHand().get(i).toString());
 
-            // Add comma spacing except after final card
+            // Add card as text
+            result += p.getHand().get(i).toString();
+
+            // Add comma spacing except after the last card
             if (i < p.getHand().size() - 1) {
-                sb.append(", ");
+                result += ", ";
             }
         }
-        return sb.toString();
+        return result;
     }
 
     // Method to determine which player wins a round of Blackjack
@@ -169,25 +220,49 @@ public class BlackjackGame extends Game {
         if (player.isBusted()) {
             System.out.println("Dealer wins — player busted.");
 
+            // Add dealer win to counter
+            dealerWins++;
+
         } else if (dealer.isBusted()) {
             System.out.println(player.getName() + " wins — dealer busted!");
-        } // Check Blackjack conditions
+
+            // Add player win to counter
+            playerWins++;
+
+        } // Check Blackjack conditions (real two-card blackjack)
         else if (player.hasBlackjack() && !dealer.hasBlackjack()) {
             System.out.println(player.getName() + " wins with Blackjack!");
+
+            // Add player win to counter
+            playerWins++;
 
         } else if (dealer.hasBlackjack() && !player.hasBlackjack()) {
             System.out.println("Dealer wins with Blackjack.");
 
-        } // Compare scores
+            // Add dealer win to counter
+            dealerWins++;
+
+        } // Compare scores normally
         else if (player.getBestScore() > dealer.getBestScore()) {
             System.out.println(player.getName() + " wins!");
+
+            // Add player win to counter
+            playerWins++;
 
         } else if (dealer.getBestScore() > player.getBestScore()) {
             System.out.println("Dealer wins.");
 
+            // Add dealer win to counter
+            dealerWins++;
+
         } else {
-            System.out.println("Push (tie).");
+            System.out.println("Push (tie). No points awarded.");
         }
+
+        // Display the running score after each game
+        System.out.println("\nCurrent Score:");
+        System.out.println(player.getName() + ": " + playerWins);
+        System.out.println("Dealer: " + dealerWins);
     }
 
     // Method to print out the winner

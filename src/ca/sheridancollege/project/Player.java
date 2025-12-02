@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Player {
 
-    // The name of the player (unique ID)
+    // Create name of the player (unique ID)
     private String name;
 
     // The player’s hand of cards
@@ -53,8 +53,8 @@ public class Player {
     // Method to compute the best Blackjack score possible with Aces counted
     public int getBestScore() {
 
-        int total = 0;      // Sum of card values counting all Aces as 1
-        int aceCount = 0;   // Count number of Aces held
+        int total = 0;
+        int aceCount = 0;
 
         // Loop through all cards in the hand
         for (Card c : hand) {
@@ -90,8 +90,12 @@ public class Player {
         return getBestScore() > 21;
     }
 
-    // Method to check if this player has a natural Blackjack
+    // Method to check if this player Blackjack
     public boolean hasBlackjack() {
-        return hand.size() == 2 && getBestScore() == 21;
+        if (hand.size() == 2 && getBestScore() == 21) {
+            return true;
+        }
+
+        return false;
     }
 }
